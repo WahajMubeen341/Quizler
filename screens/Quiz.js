@@ -6,43 +6,67 @@ export default function Quiz({navigation}) {
 
   const[quiz, setQuiz] = useState();
   const [ques, setQues] = useState();
+  var [currentQuestion, setCurrentQuestion] = useState(0);
 
   const getQuiz = async () => {
     const url = 'https://opentdb.com/api.php?amount=10';
     const resp = await fetch(url);
     const data = await resp.json();
-    console.log("res", data.results[0].category);
+    console.log("res1", data.results[currentQuestion].category);
     setQuiz(data.results)
+
+    setQues(data.results[currentQuestion])
+    console.log("quiz 0= ", data.results[currentQuestion]);
+    // if(quiz !== null  && quiz !== undefined && quiz.length > 0){
+    //   setQues = quiz[currentQuestion];
+    //   console.log("quiz = ", quiz[currentQuestion]);
+    // }
+
   };
   useEffect(()=>{
     getQuiz();
   }, []);
 
+
+  function nextQuestion(){
+    console.log("Bringnext");
+    setCurrentQuestion(currentQuestion + 1);
+    if(quiz !== null && quiz.length > currentQuestion){
+      console.log("quiz length > current = " , quiz.length +"<" + currentQuestion);
+      setQues(quiz[currentQuestion]);
+    }
+    else{
+      console.log("if failed");
+      navigation.navigate("Result");
+    }
+
+  }
+
   return (
     <View style={styles.container}>
 
-    {quiz && (
+    {ques && (
 
       <View style = {styles.parent}>
       <View style={styles.top}>
-        <Text style = {styles.questions}>{quiz[0].question}</Text>
+        <Text style = {styles.questions}>{ques.question}</Text>
         </View>
 
       <View style={styles.options}>
         <TouchableOpacity style={styles.optionButton}>
-          <Text style={styles.optionsText}>{quiz[0].correct_answer}</Text>
+          <Text style={styles.optionsText}>{ques.correct_answer}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionButton}>
-          <Text style={styles.optionsText}>{quiz[0].incorrect_answers[0]}</Text>
+          <Text style={styles.optionsText}>{ques.incorrect_answers[0]}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionButton}>
-          <Text style={styles.optionsText}>{quiz[0].incorrect_answers[1]}</Text>
+          <Text style={styles.optionsText}>{ques.incorrect_answers[1]}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.optionButton}>
-          <Text style={styles.optionsText}>{quiz[0].incorrect_answers[0]}</Text>
+          <Text style={styles.optionsText}>{ques.incorrect_answers[0]}</Text>
         </TouchableOpacity>
       </View>
 
@@ -52,7 +76,7 @@ export default function Quiz({navigation}) {
         </TouchableOpacity>
 
 
-        <TouchableOpacity style = {styles.button}>
+        <TouchableOpacity style = {styles.button} onPress={nextQuestion}>
           <Text style = {styles.buttonText}>NEXT</Text>
         </TouchableOpacity>
 
